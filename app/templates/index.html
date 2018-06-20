@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}首页{% endblock %}
+{% block body %}
+    {% if current_user.is_authenticated %}
+        Hi {{ current_user.nickname }}!
+    {% else %}
+        Hello World
+    {% endif %}
+{% endblock %}

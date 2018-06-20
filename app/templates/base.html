@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+<span><a href="/index">HOME</a></span>
+{% if current_user.is_authenticated %}
+    <span><a href="/logout">logout</a></span>
+{% else %}
+    <span><a href="/login">login</a></span>
+{% endif %}
+<span><a href="/edit">edit</a></span>
+
+<hr/>
+{% block body %}{% endblock %}
+</body>
+</html>
