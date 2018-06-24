@@ -1,5 +1,8 @@
 # encoding: utf-8
 from datetime import datetime
+
+import jieba
+
 import cut_words as cut
 import vectorized as vec
 from app import myapp
@@ -45,6 +48,7 @@ def filterCV():
     print("post_params-->", post_params)
 
     career = post_params["career"]
+    jd = post_params["description"]  # 岗位要求
     dataList = list()
     for x in range(len(CVFile[career])):
         file = CVFILEPATH + CVFile[career][x]
@@ -58,48 +62,53 @@ def filterCV():
     data = data.fillna(-1)
 
     if "description" in post_params.keys():
-        print('正在切词...')  # 切词,中间结果会保存成csv文件，所以改函数无需返回值
-        data = cut.execute(data)
+        print('正在切词...')
+        data = cut.execute(data)  # 切词,返回切词后的DataFrame
+        jd = ' '.join(jieba.cut(jd))  # 给描述文件切词，返回str
         print('正在匹配模型...')
-        data = vec.execute(data,career)
+        data = vec.execute(data, career, jd)
 
     # 将筛选结果存入resultCV
     resultCV = list()
     for x in range(len(data)):
         name = data.iloc[x]["姓名"]
         birthday = data.iloc[x]["生日"]
-        age = data.iloc[x]["age"]
+        age = int(data.iloc[x]["age"])
         if age is None and birthday != "null":
             birthday = birthday if type(birthday).__name__ == "str" else data.iloc[x]["生日"].strftime("%Y.%m.%d")
             age = datetime.now().year - datetime.strptime(birthday, "%Y.%m.%d").year
         gender = 1 if data.iloc[x]["性别"] == '男' else 0
+        # gender = data.iloc[x]["性别"]
         degree = data.iloc[x]["学历"]
-        avatar = "avatar"
+        avatar = 1
         description = data.iloc[x]["自我介绍"]
         duration = int(data.iloc[x]["工作年限（年）"])
+        # duration = data.iloc[x]["工作年限（年）"]
         # career = data["工作经历"].iloc[x]
         graduateExp = data.iloc[x]["教育经历"]
         jobExp = data.iloc[x]["工作经历"]
         projectExp = data.iloc[x]["项目经历"]
         skill = data.iloc[x]["技能"]
         change_job_fre = int(data.iloc[x]["离职率"])
+        # change_job_fre = data.iloc[x]["离职率"]
         cv = User(name, age, gender, degree, avatar, description, duration, career, graduateExp, jobExp, projectExp,
                   skill,
                   change_job_fre)
         resultCV.append(cv)
 
+    print(resultCV)
     # 返回json
     result = Result().SUCCESS(resultCV)
     resultStr = json.dumps(result, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
-    return resultStr
+    return resultStr, 200, {'Content-Type': 'application/json; charset=utf-8'}
 
 
 @myapp.route('/getProperties', methods=['GET'])
 def getJobCategories():
     result = Result().SUCCESS(JOB_POSITION)
     resultStr = json.dumps(result, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-    return resultStr
+    return resultStr, 200, {'Content-Type': 'application/json; charset=utf-8'}
 
 
 @myapp.route('/cv/<id>', methods=["GET"])

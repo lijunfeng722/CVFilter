@@ -8,7 +8,8 @@ res_java_path = 'res/Java.csv'
 res_web_path = 'res/Web.csv'
 res_mechanic_path = 'res/Mechanic.csv'
 
-stop_path = 'D:\PycharmProjects\CVFliter_Server\CV_FILTER-master\stop_words.txt'
+# stop_path = 'D:\PycharmProjects\CVFliter_Server\CV_FILTER-master\stop_words.txt'
+stop_path = 'D:\Code\python\CVFilter\CV_FILTER-master\stop_words.txt'
 desc_path = 'mid/desc'
 word_seg_path = 'mid/word_seg'
 
@@ -98,19 +99,23 @@ def format_words(df, save):
     格式化
     """
     stop = [line.strip() for line in open(stop_path, encoding='utf-8').readlines()]
-    print(type(stop), stop)
+    # print(type(stop), stop)
     # df = utils.read_csv_gbk(path)
-    df['format_word'] = df['word_seg']
+    df['format_word'] = ''
     for index, person in df.iterrows():
+        # print(index)
         format_word = ''
         for word in person['word_seg'].split():
             if word not in stop:
                 format_word += ' ' + word
         # person['format_word'] = format_word
-        df.iloc[index]['format_word'] = format_word
-
+        # print(df[index])
+        # df[index].format_word = format_word
+        # df.iloc[index]['format_word'] = format_word
+        person['format_word'] = format_word
+        df.iloc[index] = person
     # utils.save_csv_gbk(save, df)
-    print(df)
+    # print(df)
     return df
 
 

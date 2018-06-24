@@ -54,10 +54,11 @@ def minban(data):
 
 
 def meetDuration(data, durationNeed):
+    # todo data['学历']需要匹配
     print(durationNeed)
     data.loc[(data['学历'] == durationNeed[0])
-             & (data['工作年限（年）'] >= durationNeed[1])
-             & (data['工作年限（年）'] <= durationNeed[2]), '学历+年限'] = 1
+             & (data['工作年限（年）'] >= int(durationNeed[1]))
+             & (data['工作年限（年）'] <= int(durationNeed[2])), '学历+年限'] = 1
 
 
 # 筛选学历与年限

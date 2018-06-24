@@ -16,10 +16,10 @@ result_path_mechanic = 'result/机械排名.csv'
 result_path_java_test = 'result/Java排名test.csv'
 result_path_web_test = 'result/前端排名test.csv'
 result_path_mechanic_test = 'result/机械排名test.csv'
-conditions_java = '精通java语言,熟练掌握java开发技术,具备扎实的编程基础和良好的编程习惯'
-# conditions_java = '经验丰富 熟练 MySQL 数据库 扎实 Java 面向对象 熟悉 设计模式 精通 SpringMVC Spring mybatis 框架 ' \
-#                   'Eclipse SVN Maven Zookeeper dubbo 互联网 电商 思路 清晰 沟通 理解 认真 踏实 责任心' \
-#                   '框架设计 代码优化 性能优化 数据库优化 分布式 并发 负载 高可用 系统设计 开发 调优'
+# conditions_java = '精通java语言,熟练掌握java开发技术,具备扎实的编程基础和良好的编程习惯'
+conditions_java = '经验丰富 熟练 MySQL 数据库 扎实 Java 面向对象 熟悉 设计模式 精通 SpringMVC Spring mybatis 框架 ' \
+                  'Eclipse SVN Maven Zookeeper dubbo 互联网 电商 思路 清晰 沟通 理解 认真 踏实 责任心' \
+                  '框架设计 代码优化 性能优化 数据库优化 分布式 并发 负载 高可用 系统设计 开发 调优'
 conditions_web = '独立 开发 熟练 掌握 前端 技术 HTML5 CSS JavaScript Ajax jquery 开发 项目 精通 JavaScript ' \
                  'JS 语言 核心 DOM BOM Ajax JSON 深刻 理解 Web 标准 可用性 可访问性 经验 模块化 编程思想 ' \
                  ' 代码 书写 习惯 Angular Vue React 主流 前端 开发 框架 文档 逻辑性'
@@ -40,21 +40,22 @@ class MyCorpus(object):
             yield word_seg.split()
 
 
-"""
-通过gensim的word2vec转换词库中的词为词向量空间
-"""
+def execute(df, cv_type, jd):
+    """
+    通过gensim的word2vec转换词库中的词为词向量空间
+    """
+    corp = MyCorpus(df)
+    dictionary = corpora.Dictionary(corp)
 
-
-# if __name__ == '__main__':
-def execute(df, cv_type):
-    Corp = MyCorpus(df)
-    dictionary = corpora.Dictionary(Corp)
-    # # 获取对应岗位数据以及保存路径
-    condition = conditions[cv_type.upper()]
+    # 获取岗位描述，预设或分词
+    if jd.strip() == '':
+        condition = conditions[cv_type.upper()]
+    else:
+        condition = jd
     # save_path = result_path[cv_type]
 
     # 转换所有简历描述为词包
-    corpus = [dictionary.doc2bow(text) for text in Corp]
+    corpus = [dictionary.doc2bow(text) for text in corp]
     # 计算简历的tf_idf模型
     tf_idf = models.TfidfModel(corpus)
     print("简历模型生成完成")
